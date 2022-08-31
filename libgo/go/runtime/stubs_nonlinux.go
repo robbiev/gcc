@@ -12,7 +12,7 @@ func sbrk0() uintptr {
 }
 
 func gettid() _pid_t {
-	return 0
+	return _pid_t(0)
 }
 
 func tgkill(pid _pid_t, tid _pid_t, sig uint32) uint32 {

@@ -17,10 +17,10 @@ package main
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ucontext.h>
+#include <libucontext/libucontext.h>
 
 void check_params(int signo, siginfo_t *info, void *context) {
-	ucontext_t* uc = (ucontext_t*)(context);
+	libucontext_ucontext_t* uc = (libucontext_ucontext_t*)(context);
 
 	if (info->si_signo != signo) {
 		fprintf(stderr, "info->si_signo does not match signo.\n");

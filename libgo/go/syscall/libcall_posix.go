@@ -205,8 +205,8 @@ func FDZero(set *FdSet) {
 //sys	FcntlFlock(fd uintptr, cmd int, lk *Flock_t) (err error)
 //__go_fcntl_flock(fd _C_int, cmd _C_int, arg *Flock_t) _C_int
 
-//sys	Fdatasync(fd int) (err error)
-//fdatasync(fd _C_int) _C_int
+////sys	Fdatasync(fd int) (err error)
+////fdatasync(fd _C_int) _C_int
 
 //sys	Fsync(fd int) (err error)
 //fsync(fd _C_int) _C_int
@@ -283,8 +283,8 @@ func Gettimeofday(tv *Timeval) (err error) {
 //sys	Rmdir(path string) (err error)
 //rmdir(path *byte) _C_int
 
-//sys	Setdomainname(p []byte) (err error)
-//setdomainname(name *byte, len Size_t) _C_int
+////sys	Setdomainname(p []byte) (err error)
+////setdomainname(name *byte, len Size_t) _C_int
 
 //sys	Sethostname(p []byte) (err error)
 //sethostname(name *byte, len Size_t) _C_int
@@ -295,8 +295,8 @@ func Gettimeofday(tv *Timeval) (err error) {
 //sysnb Setegid(uid int) (err error)
 //setegid(uid Uid_t) _C_int
 
-//sysnb Setregid(rgid int, egid int) (err error)
-//setregid(rgid Gid_t, egid Gid_t) _C_int
+////sysnb Setregid(rgid int, egid int) (err error)
+////setregid(rgid Gid_t, egid Gid_t) _C_int
 
 //sysnb	Setpgid(pid int, pgid int) (err error)
 //setpgid(pid Pid_t, pgid Pid_t) _C_int
@@ -362,11 +362,11 @@ func Settimeofday(tv *Timeval) (err error) {
 //sys	Munlock(b []byte) (err error)
 //munlock(addr *byte, len Size_t) _C_int
 
-//sys	Mlockall(flags int) (err error)
-//mlockall(flags _C_int) _C_int
+////sys	Mlockall(flags int) (err error)
+////mlockall(flags _C_int) _C_int
 
-//sys	Munlockall() (err error)
-//munlockall() _C_int
+////sys	Munlockall() (err error)
+////munlockall() _C_int
 
 func setTimespec(sec, nsec int64) Timespec {
 	return Timespec{Sec: Timespec_sec_t(sec), Nsec: Timespec_nsec_t(nsec)}

@@ -1534,6 +1534,22 @@ nvptx-*)
 	tmake_file="$tmake_file nvptx/t-nvptx"
 	extra_parts="crt0.o"
 	;;
+i[34567]86-*-serenity*)
+	extra_parts="$extra_parts crti.o crtbegin.o crtbeginS.o crtend.o crtendS.o crtn.o"
+	tmake_file="$tmake_file i386/t-crtstuff t-crtstuff-pic t-libgcc-pic t-slibgcc t-eh-dw2-dip"
+	;;
+x86_64-*-serenity*)
+	extra_parts="$extra_parts crti.o crtbegin.o crtbeginS.o crtend.o crtendS.o crtn.o"
+	tmake_file="$tmake_file i386/t-crtstuff t-crtstuff-pic t-libgcc-pic t-slibgcc t-eh-dw2-dip"
+	;;
+aarch64-*-serenity*)
+	extra_parts="$extra_parts crti.o crtbegin.o crtend.o crtn.o"
+	extra_parts="$extra_parts crtfastmath.o"
+	tmake_file="$tmake_file ${cpu_type}/t-aarch64"
+	tmake_file="$tmake_file ${cpu_type}/t-lse t-slibgcc-libgcc"
+	tmake_file="$tmake_file ${cpu_type}/t-softfp t-softp t-crtfm"
+	md_unwind_header=aarch64/aarch64-unwind.h
+	;;
 *)
 	echo "*** Configuration ${host} not supported" 1>&2
 	exit 1

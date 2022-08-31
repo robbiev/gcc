@@ -55,6 +55,8 @@ grep -v '^// ' gen-sysinfo.go | \
 
 # The errno constants.  These get type Errno.
 egrep '#define E[A-Z0-9_]+ [0-9E]' errno.i | \
+  grep -v EWOULDBLOCK | \
+  grep -v ELAST | \
   sed -e 's/^#define \(E[A-Z0-9_]*\) .*$/const \1 = Errno(_\1)/' >> ${OUT}
 
 # Workaround for GNU/Hurd _EMIG_* errors having negative values
@@ -409,7 +411,9 @@ else
   echo "type Offset_t _off_t" >> ${OUT}
 fi
 echo "type Mode_t _mode_t" >> ${OUT}
-echo "type Pid_t _pid_t" >> ${OUT}
+echo "type Pid_t ___pid_t" >> ${OUT}
+echo "type pid_t ___pid_t" >> ${OUT}
+echo "type _pid_t ___pid_t" >> ${OUT}
 echo "type Uid_t _uid_t" >> ${OUT}
 echo "type Gid_t _gid_t" >> ${OUT}
 echo "type Socklen_t _socklen_t" >> ${OUT}
@@ -441,9 +445,10 @@ else
 fi
 
 # The time_t type.
-if grep '^type _time_t ' gen-sysinfo.go > /dev/null 2>&1; then
-  echo 'type Time_t _time_t' >> ${OUT}
-fi
+#if grep '^type _time_t ' gen-sysinfo.go > /dev/null 2>&1; then
+  echo 'type Time_t int64' >> ${OUT}
+  echo 'type _clock_t uint32' >> ${OUT}
+#fi
 
 # The time structures need special handling: we need to name the
 # types, so that we can cast integers to the right types when
@@ -731,11 +736,11 @@ if ! grep 'const _sizeof_ip6_mtuinfo = ' ${OUT} >/dev/null 2>&1; then
 fi
 
 # Try to guess the type to use for fd_set.
-fd_set=`grep '^type _fd_set ' gen-sysinfo.go || true`
+#fd_set=`grep '^type _fd_set ' gen-sysinfo.go || true`
 fds_bits_type="_C_long"
-if test "$fd_set" != ""; then
-    fds_bits_type=`echo $fd_set | sed -e 's/.*[]]\([^;]*\); }$/\1/'`
-fi
+#if test "$fd_set" != ""; then
+#    fds_bits_type=`echo $fd_set | sed -e 's/.*[]]\([^;]*\); }$/\1/'`
+#fi
 echo "type fds_bits_type $fds_bits_type" >> ${OUT}
 
 # The addrinfo struct.

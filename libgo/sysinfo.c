@@ -16,7 +16,7 @@
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <ucontext.h>
+#include <libucontext/libucontext.h>
 #include <netinet/in.h>
 /* <netinet/tcp.h> needs u_char/u_short, but <sys/bsd_types> is only
    included by <netinet/in.h> if _SGIAPI (i.e. _SGI_SOURCE
@@ -381,6 +381,7 @@ enum {
 
 // From dirent.h
 SREF(dirent);
+SREF(_dirent);
 SREF(dirent64);
 OTREF(DIR);
 EREF(DT_UNKNOWN);
@@ -533,6 +534,7 @@ SREF(timex);
 
 // From sys/types.h
 TREF(pid_t);
+TREF(_pid_t);
 TREF(off_t);
 TREF(loff_t);
 TREF(size_t);
@@ -542,7 +544,7 @@ TREF(dev_t);
 TREF(time_t);
 
 // From sys/ucontext.h
-TREF(ucontext_t);
+TREF(libucontext_ucontext_t);
 
 #if defined(HAVE_SYS_USER_H)
 // From sys/user.h

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-//go:build aix || darwin || dragonfly || freebsd || hurd || linux || netbsd || openbsd || solaris
+//go:build aix || darwin || dragonfly || freebsd || hurd || linux || netbsd || openbsd || serenity || solaris
 
 package syscall
 
@@ -137,10 +137,10 @@ type Signal int
 
 func (s Signal) Signal() {}
 
-func Signame(s Signal) string
+//func Signame(s Signal) string
 
 func (s Signal) String() string {
-	return Signame(s)
+	return string(s)
 }
 
 func Read(fd int, p []byte) (n int, err error) {

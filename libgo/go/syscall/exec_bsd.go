@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-//go:build aix || darwin || dragonfly || netbsd || openbsd || solaris
+//go:build aix || darwin || dragonfly || netbsd || openbsd || serenity || solaris
 
 package syscall
 
@@ -91,12 +91,12 @@ func forkAndExecInChild(argv0 *byte, argv, envv []*byte, chroot, dir *byte, attr
 	// Fork succeeded, now in child.
 
 	// Enable tracing if requested.
-	if sys.Ptrace {
-		err1 = raw_ptrace(_PTRACE_TRACEME, 0, 0, 0)
-		if err1 != 0 {
-			goto childerror
-		}
-	}
+	// if sys.Ptrace {
+	// 	err1 = raw_ptrace(_PTRACE_TRACEME, 0, 0, 0)
+	// 	if err1 != 0 {
+	// 		goto childerror
+	// 	}
+	// }
 
 	// Session ID
 	if sys.Setsid {

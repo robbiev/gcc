@@ -66,6 +66,8 @@ static void gscanstack(G*);
 
 __thread G *g __asm__(GOSYM_PREFIX "runtime.g");
 
+#undef SETCONTEXT_CLOBBERS_TLS
+
 #ifndef SETCONTEXT_CLOBBERS_TLS
 
 static inline void
@@ -94,14 +96,14 @@ static __thread greg_t fs;
 static inline void
 initcontext(void)
 {
-	ucontext_t c;
+	libucontext_ucontext_t c;
 
 	getcontext(&c);
 	fs = c.uc_mcontext.gregs[REG_FSBASE];
 }
 
 static inline void
-fixcontext(ucontext_t* c)
+fixcontext(libucontext_ucontext_t* c)
 {
 	c->uc_mcontext.gregs[REG_FSBASE] = fs;
 }
@@ -116,14 +118,14 @@ static __thread __greg_t tlsbase;
 static inline void
 initcontext(void)
 {
-	ucontext_t c;
+	libucontext_ucontext_t c;
 
 	getcontext(&c);
 	tlsbase = c.uc_mcontext._mc_tlsbase;
 }
 
 static inline void
-fixcontext(ucontext_t* c)
+fixcontext(libucontext_ucontext_t* c)
 {
 	c->uc_mcontext._mc_tlsbase = tlsbase;
 }
@@ -136,7 +138,7 @@ initcontext(void)
 }
 
 static inline void
-fixcontext(ucontext_t *c)
+fixcontext(libucontext_ucontext_t *c)
 {
 	/* ??? Using 
 	     register unsigned long thread __asm__("%g7");
@@ -160,7 +162,7 @@ initcontext(void)
 }
 
 static inline void
-fixcontext(ucontext_t* c)
+fixcontext(libucontext_ucontext_t* c)
 {
 	// Thread pointer is in r13, per 64-bit ABI.
 	if (sizeof (c->uc_mcontext.jmp_context.gpr[13]) == 8)

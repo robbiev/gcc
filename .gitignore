@@ -67,3 +67,14 @@ stamp-*
 /mpc*
 /gmp*
 /isl*
+
+# serenity build stuff
+INSTALL/
+gcc/doc/
+host-i686-pc-serenity/
+i686-pc-serenity/
+build-x86_64-pc-linux-gnu/
+/MD5SUMS
+/Makefile
+/NEWS
+/gcc/gengtype-lex.cc

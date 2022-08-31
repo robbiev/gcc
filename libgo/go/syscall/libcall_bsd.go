@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// +build darwin dragonfly freebsd netbsd openbsd
+// +build darwin dragonfly freebsd netbsd openbsd serenity
 
 // BSD library calls.
 
 package syscall
 
-import (
-	"unsafe"
-)
+// import (
+// 	"unsafe"
+// )
 
 //sys	sysctl(mib []_C_int, old *byte, oldlen *uintptr, new *byte, newlen uintptr) (err error)
 //sysctl(mib *_C_int, miblen uintptr, old *byte, oldlen *uintptr, new *byte, newlen uintptr) _C_int
@@ -18,25 +18,29 @@ import (
 //sysnb raw_ptrace(request int, pid int, addr uintptr, data uintptr) (err Errno)
 //ptrace(request _C_int, pid Pid_t, addr *byte, data _C_int) _C_int
 
-//sys	paccept(fd int, rsa *RawSockaddrAny, addrlen *Socklen_t, sigmask *_sigset_t, flags int) (nfd int, err error)
-//paccept(s _C_int, rsa *RawSockaddrAny, addrlen *Socklen_t, sigmask *_sigset_t, flags int) _C_int
+//sys	accept4(fd int, rsa *RawSockaddrAny, addrlen *Socklen_t, flags int) (nfd int, err error)
+//accept4(s _C_int, rsa *RawSockaddrAny, addrlen *Socklen_t, flags int) _C_int
 
 //sys	Flock(fd int, how int) (err error)
 //flock(fd _C_int, how _C_int) _C_int
+
+////sys	Getdirentries(fd int, buf []byte) (n int, err error)
+////get_dir_entries(fd _C_int, buf *byte, nbytes uintptr) _C_int
 
 func ReadDirent(fd int, buf []byte) (n int, err error) {
 	// Final argument is (basep *uintptr) and the syscall doesn't take nil.
 	// 64 bits should be enough. (32 bits isn't even on 386). Since the
 	// actual system call is getdirentries64, 64 is a good guess.
 	// TODO(rsc): Can we use a single global basep for all calls?
-	var base = (*uintptr)(unsafe.Pointer(new(uint64)))
-	return Getdirentries(fd, buf, base)
+	//var base = (*uintptr)(unsafe.Pointer(new(uint64)))
+	//return Getdirentries(fd, buf)
+	return 0, EINVAL // FIXME
 }
 
 func Accept4(fd, flags int) (nfd int, sa Sockaddr, err error) {
 	var rsa RawSockaddrAny
 	var len Socklen_t = SizeofSockaddrAny
-	nfd, err = paccept(fd, &rsa, &len, nil, flags)
+	nfd, err = accept4(fd, &rsa, &len, flags)
 	if err != nil {
 		return
 	}
@@ -64,50 +68,50 @@ func Pipe2(p []int, flags int) (err error) {
 	return
 }
 
-func Sysctl(name string) (value string, err error) {
-	// Translate name to mib number.
-	mib, err := nametomib(name)
-	if err != nil {
-		return "", err
-	}
+// func Sysctl(name string) (value string, err error) {
+// 	// Translate name to mib number.
+// 	mib, err := nametomib(name)
+// 	if err != nil {
+// 		return "", err
+// 	}
 
-	// Find size.
-	n := uintptr(0)
-	if err = sysctl(mib, nil, &n, nil, 0); err != nil {
-		return "", err
-	}
-	if n == 0 {
-		return "", nil
-	}
+// 	// Find size.
+// 	n := uintptr(0)
+// 	if err = sysctl(mib, nil, &n, nil, 0); err != nil {
+// 		return "", err
+// 	}
+// 	if n == 0 {
+// 		return "", nil
+// 	}
 
-	// Read into buffer of that size.
-	buf := make([]byte, n)
-	if err = sysctl(mib, &buf[0], &n, nil, 0); err != nil {
-		return "", err
-	}
+// 	// Read into buffer of that size.
+// 	buf := make([]byte, n)
+// 	if err = sysctl(mib, &buf[0], &n, nil, 0); err != nil {
+// 		return "", err
+// 	}
 
-	// Throw away terminating NUL.
-	if n > 0 && buf[n-1] == '\x00' {
-		n--
-	}
-	return string(buf[0:n]), nil
-}
+// 	// Throw away terminating NUL.
+// 	if n > 0 && buf[n-1] == '\x00' {
+// 		n--
+// 	}
+// 	return string(buf[0:n]), nil
+// }
 
-func SysctlUint32(name string) (value uint32, err error) {
-	// Translate name to mib number.
-	mib, err := nametomib(name)
-	if err != nil {
-		return 0, err
-	}
+// func SysctlUint32(name string) (value uint32, err error) {
+// 	// Translate name to mib number.
+// 	mib, err := nametomib(name)
+// 	if err != nil {
+// 		return 0, err
+// 	}
 
-	// Read into buffer of that size.
-	n := uintptr(4)
-	buf := make([]byte, 4)
-	if err = sysctl(mib, &buf[0], &n, nil, 0); err != nil {
-		return 0, err
-	}
-	if n != 4 {
-		return 0, EIO
-	}
-	return *(*uint32)(unsafe.Pointer(&buf[0])), nil
-}
+// 	// Read into buffer of that size.
+// 	n := uintptr(4)
+// 	buf := make([]byte, 4)
+// 	if err = sysctl(mib, &buf[0], &n, nil, 0); err != nil {
+// 		return 0, err
+// 	}
+// 	if n != 4 {
+// 		return 0, EIO
+// 	}
+// 	return *(*uint32)(unsafe.Pointer(&buf[0])), nil
+// }

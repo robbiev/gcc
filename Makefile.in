@@ -176,6 +176,7 @@ BUILD_EXPORTS = \
 # built for the build system to override those in BASE_FLAGS_TO_PASS.
 EXTRA_BUILD_FLAGS = \
 	CFLAGS="$(CFLAGS_FOR_BUILD)" \
+	CXXFLAGS="$(CXXFLAGS_FOR_BUILD)" \
 	LDFLAGS="$(LDFLAGS_FOR_BUILD)"
 
 # This is the list of directories to built for the host system.
@@ -52801,7 +52802,7 @@ configure-target-libgo:
 	esac; \
 	module_srcdir=libgo; \
 	rm -f no-such-file || : ; \
-	CONFIG_SITE=no-such-file $(SHELL) \
+	CONFIG_SITE=no-such-file LIBS="-lucontext $$LIBS" $(SHELL) \
 	  $$s/$$module_srcdir/configure \
 	  --srcdir=$${topdir}/$$module_srcdir \
 	  $(TARGET_CONFIGARGS) --build=${build_alias} --host=${target_alias} \

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// +build aix darwin dragonfly freebsd hurd linux netbsd openbsd solaris
+// +build aix darwin dragonfly freebsd hurd linux netbsd openbsd serenity solaris
 
 package runtime
 
@@ -50,9 +50,9 @@ func getpid() _pid_t
 //extern-sysinfo kill
 func kill(pid _pid_t, sig uint32) int32
 
-//go:noescape
-//extern-sysinfo setitimer
-func setitimer(which int32, new *_itimerval, old *_itimerval) int32
+////go:noescape
+////extern-sysinfo setitimer
+////func setitimer(which int32, new *_itimerval, old *_itimerval) int32
 
 type sigctxt struct {
 	info *_siginfo_t

@@ -1707,6 +1707,10 @@ ix86_option_init_struct (struct gcc_options *opts)
        avoid calling them when that's the only reason we would.  */
     opts->x_flag_errno_math = 0;
 
+#ifdef TARGET_SERENITY
+  opts->x_flag_errno_math = 0;
+#endif
+
   opts->x_flag_pcc_struct_return = 2;
   opts->x_flag_asynchronous_unwind_tables = 2;
 }

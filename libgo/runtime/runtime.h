@@ -17,7 +17,17 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <semaphore.h>
-#include <ucontext.h>
+#include <libucontext/libucontext.h>
+
+struct _dirent {
+  ino_t d_ino;
+  off_t d_off;
+  unsigned short d_reclen;
+  unsigned char d_type;
+  char d_name[256];
+};
+
+typedef __pid_t _pid_t;
 
 #ifdef HAVE_SYS_MMAN_H
 #include <sys/mman.h>
@@ -500,11 +510,12 @@ int __go_getcontext(__go_context_t*);
 int __go_setcontext(__go_context_t*);
 void __go_makecontext(__go_context_t*, void (*)(), void*, size_t);
 #else
-#define __go_context_t	ucontext_t
-#define __go_getcontext(c)	getcontext(c)
-#define __go_setcontext(c)	setcontext(c)
+#include <libucontext/libucontext.h>
+#define __go_context_t	libucontext_ucontext_t
+#define __go_getcontext(c)	libucontext_getcontext(c)
+#define __go_setcontext(c)	libucontext_setcontext(c)
 #define __go_makecontext(c, fn, sp, size) \
-	((c)->uc_stack.ss_sp = sp, (c)->uc_stack.ss_size = size, makecontext(c, fn, 0))
+	((c)->uc_stack.ss_sp = sp, (c)->uc_stack.ss_size = size, libucontext_makecontext(c, fn, 0))
 #endif
 
 // Symbols defined by the linker.

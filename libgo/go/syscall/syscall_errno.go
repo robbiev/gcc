@@ -42,5 +42,5 @@ func (e Errno) Temporary() bool {
 }
 
 func (e Errno) Timeout() bool {
-	return e == EAGAIN || e == EWOULDBLOCK || e == ETIMEDOUT
+	return e == EAGAIN || e == ETIMEDOUT
 }

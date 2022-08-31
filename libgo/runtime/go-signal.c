@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/time.h>
-#include <ucontext.h>
+#include <libucontext/libucontext.h>
 
 #include "runtime.h"
 
@@ -225,26 +225,29 @@ getSiginfo(siginfo_t *info, void *context __attribute__((unused)))
 	// try a stack backtrace across the signal handler.
 
 #if defined(__x86_64__) && defined(__linux__)
-	ret.sigpc = ((ucontext_t*)(context))->uc_mcontext.gregs[REG_RIP];
+	ret.sigpc = ((libucontext_ucontext_t*)(context))->uc_mcontext.gregs[REG_RIP];
 #elif defined(__i386__) && defined(__linux__)
-	ret.sigpc = ((ucontext_t*)(context))->uc_mcontext.gregs[REG_EIP];
+	ret.sigpc = ((libucontext_ucontext_t*)(context))->uc_mcontext.gregs[REG_EIP];
 #elif defined(__alpha__) && defined(__linux__)
-	ret.sigpc = ((ucontext_t*)(context))->uc_mcontext.sc_pc;
+	ret.sigpc = ((libucontext_ucontext_t*)(context))->uc_mcontext.sc_pc;
 #elif defined(__PPC64__) && defined(__linux__)
-	ret.sigpc = ((ucontext_t*)(context))->uc_mcontext.gp_regs[32];
+	ret.sigpc = ((libucontext_ucontext_t*)(context))->uc_mcontext.gp_regs[32];
 #elif defined(__PPC__) && defined(__linux__)
 # if defined(__GLIBC__)
-	ret.sigpc = ((ucontext_t*)(context))->uc_mcontext.uc_regs->gregs[32];
+	ret.sigpc = ((libucontext_ucontext_t*)(context))->uc_mcontext.uc_regs->gregs[32];
 # else
-	ret.sigpc = ((ucontext_t*)(context))->uc_mcontext.gregs[32];
+	ret.sigpc = ((libucontext_ucontext_t*)(context))->uc_mcontext.gregs[32];
 # endif
 #elif defined(__PPC__) && defined(_AIX)
-	ret.sigpc = ((ucontext_t*)(context))->uc_mcontext.jmp_context.iar;
+	ret.sigpc = ((libucontext_ucontext_t*)(context))->uc_mcontext.jmp_context.iar;
 #elif defined(__aarch64__) && defined(__linux__)
-	ret.sigpc = ((ucontext_t*)(context))->uc_mcontext.pc;
+	ret.sigpc = ((libucontext_ucontext_t*)(context))->uc_mcontext.pc;
 #elif defined(__NetBSD__)
-	ret.sigpc = _UC_MACHINE_PC(((ucontext_t*)(context)));
+	ret.sigpc = _UC_MACHINE_PC(((libucontext_ucontext_t*)(context)));
 #endif
+
+	//runtime_printf("XXX serenity");
+	//ret.sigpc = ((libucontext_ucontext_t*)(context))->uc_mcontext.gregs[REG_EIP];
 
 	if (ret.sigpc == 0) {
 		// Skip getSiginfo/sighandler/sigtrampgo/sigtramp/handler.
@@ -269,7 +272,7 @@ dumpregs(siginfo_t *info __attribute__((unused)), void *context __attribute__((u
 {
 #if defined(__x86_64__) && defined(__linux__)
 	{
-		mcontext_t *m = &((ucontext_t*)(context))->uc_mcontext;
+		mcontext_t *m = &((libucontext_ucontext_t*)(context))->uc_mcontext;
 
 		runtime_printf("rax    %X\n", m->gregs[REG_RAX]);
 		runtime_printf("rbx    %X\n", m->gregs[REG_RBX]);
@@ -295,7 +298,7 @@ dumpregs(siginfo_t *info __attribute__((unused)), void *context __attribute__((u
 	  }
 #elif defined(__i386__) && defined(__linux__)
 	{
-		mcontext_t *m = &((ucontext_t*)(context))->uc_mcontext;
+		mcontext_t *m = &((libucontext_ucontext_t*)(context))->uc_mcontext;
 
 		runtime_printf("eax    %x\n", m->gregs[REG_EAX]);
 		runtime_printf("ebx    %x\n", m->gregs[REG_EBX]);
@@ -313,7 +316,7 @@ dumpregs(siginfo_t *info __attribute__((unused)), void *context __attribute__((u
 	  }
 #elif defined(__alpha__) && defined(__linux__)
 	{
-		mcontext_t *m = &((ucontext_t*)(context))->uc_mcontext;
+		mcontext_t *m = &((libucontext_ucontext_t*)(context))->uc_mcontext;
 
 		runtime_printf("v0  %X\n", m->sc_regs[0]);
 		runtime_printf("t0  %X\n", m->sc_regs[1]);
@@ -353,7 +356,7 @@ dumpregs(siginfo_t *info __attribute__((unused)), void *context __attribute__((u
 		int i;
 
 # if defined(__PPC64__)
-		mcontext_t *m = &((ucontext_t*)(context))->uc_mcontext;
+		mcontext_t *m = &((libucontext_ucontext_t*)(context))->uc_mcontext;
 
 		for (i = 0; i < 32; i++)
 			runtime_printf("r%d %X\n", i, m->gp_regs[i]);
@@ -365,9 +368,9 @@ dumpregs(siginfo_t *info __attribute__((unused)), void *context __attribute__((u
 		runtime_printf("xer %X\n", m->gp_regs[37]);
 # else
 #  if defined(__GLIBC__)
-		mcontext_t *m = ((ucontext_t*)(context))->uc_mcontext.uc_regs;
+		mcontext_t *m = ((libucontext_ucontext_t*)(context))->uc_mcontext.uc_regs;
 #  else
-		mcontext_t *m = &((ucontext_t*)(context))->uc_mcontext;
+		mcontext_t *m = &((libucontext_ucontext_t*)(context))->uc_mcontext;
 #  endif
 
 		for (i = 0; i < 32; i++)
@@ -382,7 +385,7 @@ dumpregs(siginfo_t *info __attribute__((unused)), void *context __attribute__((u
 	  }
 #elif defined(__PPC__) && defined(_AIX)
 	  {
-		mcontext_t *m = &((ucontext_t*)(context))->uc_mcontext;
+		mcontext_t *m = &((libucontext_ucontext_t*)(context))->uc_mcontext;
 		int i;
 
 		for (i = 0; i < 32; i++)
@@ -396,7 +399,7 @@ dumpregs(siginfo_t *info __attribute__((unused)), void *context __attribute__((u
 	  }
 #elif defined(__aarch64__) && defined(__linux__)
 	  {
-		mcontext_t *m = &((ucontext_t*)(context))->uc_mcontext;
+		mcontext_t *m = &((libucontext_ucontext_t*)(context))->uc_mcontext;
 		int i;
 
 		for (i = 0; i < 31; i++)

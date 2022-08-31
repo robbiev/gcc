@@ -166,7 +166,7 @@ AC_SUBST(go_include)
 # All known GOOS values.  This is the union of all operating systems
 # supported by the gofrontend and all operating systems supported by
 # the gc toolchain.
-ALLGOOS="aix android darwin dragonfly freebsd hurd illumos ios irix js linux netbsd openbsd plan9 rtems solaris windows zos"
+ALLGOOS="aix android darwin dragonfly freebsd hurd illumos ios irix js linux netbsd openbsd plan9 rtems serenity solaris windows zos"
 
 is_darwin=no
 is_freebsd=no
@@ -179,6 +179,7 @@ is_rtems=no
 is_solaris=no
 is_aix=no
 is_hurd=no
+is_serenity=no
 GOOS=unknown
 case ${host} in
   *-*-darwin*)   is_darwin=yes;  GOOS=darwin ;;
@@ -192,6 +193,7 @@ case ${host} in
   *-*-solaris2*) is_solaris=yes; GOOS=solaris ;;
   *-*-aix*)      is_aix=yes;     GOOS=aix ;;
   *-*-gnu*)      is_hurd=yes;    GOOS=hurd ;;
+  *-*-serenity*) is_serenity=yes;GOOS=serenity ;;
 esac
 AM_CONDITIONAL(LIBGO_IS_DARWIN, test $is_darwin = yes)
 AM_CONDITIONAL(LIBGO_IS_FREEBSD, test $is_freebsd = yes)
@@ -204,6 +206,7 @@ AM_CONDITIONAL(LIBGO_IS_RTEMS, test $is_rtems = yes)
 AM_CONDITIONAL(LIBGO_IS_SOLARIS, test $is_solaris = yes)
 AM_CONDITIONAL(LIBGO_IS_AIX, test $is_aix = yes)
 AM_CONDITIONAL(LIBGO_IS_HURD, test $is_hurd = yes)
+AM_CONDITIONAL(LIBGO_IS_SERENITY, test $is_serenity = yes)
 AM_CONDITIONAL(LIBGO_IS_BSD, test $is_darwin = yes -o $is_dragonfly = yes -o $is_freebsd = yes -o $is_netbsd = yes -o $is_openbsd = yes)
 AC_SUBST(GOOS)
 AC_SUBST(ALLGOOS)
@@ -710,13 +713,13 @@ AC_RUN_IFELSE(
   [AC_LANG_SOURCE([
 #include <pthread.h>
 #include <stdlib.h>
-#include <ucontext.h>
+#include <libucontext/libucontext.h>
 #include <unistd.h>
 
 __thread int tls;
 
 static char stack[[10 * 1024 * 1024]];
-static ucontext_t c;
+static libucontext_ucontext_t c;
 
 /* Called via makecontext/setcontext.  */
 

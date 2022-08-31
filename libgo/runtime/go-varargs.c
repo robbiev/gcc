@@ -12,6 +12,7 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
+#include <stdint.h>
 #ifdef HAVE_SYSCALL_H
 #include <syscall.h>
 #endif
@@ -101,6 +102,8 @@ __go_openat (int fd, char *path, int flags, mode_t mode)
 
 #ifdef HAVE_SYSCALL
 
+#define UNUSED(x) (void)(x)
+
 // __go_syscall6 is called by both the runtime and syscall packages.
 // We use uintptr_t to make sure that the types match, since the Go
 // and C "int" types are not the same.
@@ -109,7 +112,11 @@ uintptr_t
 __go_syscall6(uintptr_t flag, uintptr_t a1, uintptr_t a2, uintptr_t a3,
 	      uintptr_t a4, uintptr_t a5, uintptr_t a6)
 {
-  return syscall (flag, a1, a2, a3, a4, a5, a6);
+  // FIXME SerenityOS has max 4 params atm
+  UNUSED(a5);
+  UNUSED(a6);
+  return syscall4(flag, a1, a2, a3, a4);
+  //return syscall (flag, a1, a2, a3, a4, a5, a6);
 }
 
 #endif

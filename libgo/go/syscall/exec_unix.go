@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-//go:build aix || darwin || dragonfly || freebsd || hurd || linux || netbsd || openbsd || solaris
+//go:build aix || darwin || dragonfly || freebsd || hurd || linux || netbsd || openbsd || serenity || solaris
 
 // Fork, exec, wait, etc.
 
@@ -339,7 +339,7 @@ func Exec(argv0 string, argv []string, envv []string) (err error) {
 	runtime_BeforeExec()
 
 	var err1 error
-	if runtime.GOOS == "solaris" || runtime.GOOS == "illumos" || runtime.GOOS == "aix" || runtime.GOOS == "hurd" {
+	if runtime.GOOS == "solaris" || runtime.GOOS == "illumos" || runtime.GOOS == "aix" || runtime.GOOS == "hurd" || runtime.GOOS == "serenity" {
 		// RawSyscall should never be used on Solaris, illumos, or AIX.
 		err1 = raw_execve(argv0p, &argvp[0], &envvp[0])
 	} else if runtime.GOOS == "darwin" || runtime.GOOS == "ios" {
@@ -348,11 +348,11 @@ func Exec(argv0 string, argv []string, envv []string) (err error) {
 	} else if runtime.GOOS == "openbsd" && (runtime.GOARCH == "386" || runtime.GOARCH == "amd64" || runtime.GOARCH == "arm" || runtime.GOARCH == "arm64") {
 		// Similarly on OpenBSD.
 		err1 = execveOpenBSD(argv0p, &argvp[0], &envvp[0])
-	} else {
-		_, _, err1 = RawSyscall(SYS_EXECVE,
-			uintptr(unsafe.Pointer(argv0p)),
-			uintptr(unsafe.Pointer(&argvp[0])),
-			uintptr(unsafe.Pointer(&envvp[0])))
+	// } else {
+	// 	_, _, err1 = RawSyscall(SYS_EXECVE,
+	// 		uintptr(unsafe.Pointer(argv0p)),
+	// 		uintptr(unsafe.Pointer(&argvp[0])),
+	// 		uintptr(unsafe.Pointer(&envvp[0])))
 	}
 	runtime_AfterExec()
 	return err1

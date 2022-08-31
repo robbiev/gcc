@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-//go:build (aix || darwin || dragonfly || freebsd || hurd || (!android && linux) || netbsd || openbsd || solaris) && cgo && !osusergo
+//go:build (aix || darwin || dragonfly || freebsd || hurd || (!android && linux) || netbsd || openbsd || serenity || solaris) && cgo && !osusergo
 
 package user
 
@@ -194,7 +194,7 @@ type bufferKind int
 
 const (
 	userBuffer  = bufferKind(syscall.SC_GETPW_R_SIZE_MAX)
-	groupBuffer = bufferKind(syscall.SC_GETGR_R_SIZE_MAX)
+	groupBuffer = bufferKind(syscall.SC_GETPW_R_SIZE_MAX) // FIXME
 )
 
 func (k bufferKind) initialSize() syscall.Size_t {
